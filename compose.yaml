@@ -1,7 +1,9 @@
-name: neurovector-sim
-
+# platform 레포의 compose.yaml 에서 include 로 가져다 쓰거나,
+# 이 디렉터리에서 직접 `docker compose --profile sim up -d` 로 실행합니다.
 services:
   sim:
+    # platform 에서 기본 `docker compose up` 시에는 뜨지 않도록 프로필로 분리
+    profiles: ["sim"]
     build:
       context: ./docker
       args:

@@ -1,4 +1,4 @@
-COMPOSE := docker compose
+COMPOSE := docker compose --profile sim
 SERVICE := sim
 
 .PHONY: help init build up down restart shell x11 px4 headless agent foxglove rviz bridge topics gz-topics logs clean

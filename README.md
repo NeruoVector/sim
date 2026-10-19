@@ -23,7 +23,7 @@
 
 ```bash
 ./scripts/setup-host.sh     # Docker 확인 + .env 생성 + X11 허용 + 이미지 빌드
-make up                     # 컨테이너 기동
+make up                     # 컨테이너 기동 (내부적으로 --profile sim 사용)
 ```
 
 이후 터미널을 나눠서 실행합니다.
@@ -44,7 +44,7 @@ make headless   # Gazebo GUI 없이 PX4 + Gazebo 실행
 ## 구조
 
 ```
-compose.yaml            # 단일 sim 서비스 (host 네트워킹)
+compose.yaml            # 단일 sim 서비스 (host 네트워킹, `sim` 프로필)
 docker/
 ├── Dockerfile          # 기성 PX4 이미지 + rviz2/foxglove-bridge/ros_gz
 ├── entrypoint.sh       # ROS 2 + px4_ros2 + /ros2_ws 오버레이 소싱
@@ -57,6 +57,9 @@ scripts/setup-host.sh
 logs/                   # PX4 ulog 저장 위치
 Makefile
 ```
+
+> `sim` 서비스는 프로필로 분리되어 있어 `platform` 레포에서 `docker compose up` 할 때는 뜨지 않습니다.
+> platform 에서 함께 띄우려면 `docker compose --profile sim up -d`.
 
 ## 포트 / 인터페이스
 
