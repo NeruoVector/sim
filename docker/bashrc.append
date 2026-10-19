@@ -1,0 +1,12 @@
+
+# ---- NeuroVector sim 편의 설정 ----
+source /opt/ros/jazzy/setup.bash
+source /opt/px4_ros2/install/local_setup.bash
+[ -f /ros2_ws/install/setup.bash ] && source /ros2_ws/install/setup.bash
+cd /ros2_ws 2>/dev/null || true
+
+alias cbs='colcon build --symlink-install'
+alias cbp='colcon build --symlink-install --packages-select'
+alias tl='ros2 topic list'
+alias gztl='gz topic -l'
+alias sim-topics='ros2 topic list | sort'

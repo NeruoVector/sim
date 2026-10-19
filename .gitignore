@@ -1,0 +1,9 @@
+.env
+logs/*
+!logs/.gitkeep
+*.ulg
+
+# ROS 2 빌드 산출물
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/

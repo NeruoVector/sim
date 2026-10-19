@@ -1,0 +1,27 @@
+# ros_gz_bridge 파라미터 파일
+#
+# 사용법:
+#   ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/config/gz_bridge.yaml
+#
+# 실제 Gazebo 토픽 이름은 기체/월드에 따라 다릅니다. 아래로 확인 후 수정하세요.
+#   gz topic -l | grep -E 'image|camera|points'
+#
+# 여기서는 GUI 기체(gz_x500_depth)의 카메라를 ROS 2 로 넘깁니다.
+
+- ros_topic_name: "/camera/image_raw"
+  gz_topic_name: "/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/camera/camera_info"
+  gz_topic_name: "/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/clock"
+  gz_topic_name: "/clock"
+  ros_type_name: "rosgraph_msgs/msg/Clock"
+  gz_type_name: "gz.msgs.Clock"
+  direction: GZ_TO_ROS
