@@ -13,4 +13,13 @@ if [ -f /ros2_ws/install/setup.bash ]; then
     source /ros2_ws/install/setup.bash
 fi
 
+# 호스트의 sim/models 를 Gazebo 리소스 경로에 추가 (기존 경로는 유지)
+if [ -d /models ]; then
+    model_paths="/models"
+    for dir in /models/drones /models/environments /models/props; do
+        [ -d "$dir" ] && model_paths="$model_paths:$dir"
+    done
+    export GZ_SIM_RESOURCE_PATH="$model_paths${GZ_SIM_RESOURCE_PATH:+:$GZ_SIM_RESOURCE_PATH}"
+fi
+
 exec "$@"

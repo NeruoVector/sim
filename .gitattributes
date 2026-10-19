@@ -1,0 +1,31 @@
+# 3D 모델/메쉬는 Git LFS 로 관리한다.
+# `git lfs install` 후 `git add` 하면 자동으로 LFS 포인터가 커밋된다.
+*.dae    filter=lfs diff=lfs merge=lfs -text
+*.stl    filter=lfs diff=lfs merge=lfs -text
+*.obj    filter=lfs diff=lfs merge=lfs -text
+*.fbx    filter=lfs diff=lfs merge=lfs -text
+*.glb    filter=lfs diff=lfs merge=lfs -text
+*.gltf   filter=lfs diff=lfs merge=lfs -text
+*.blend  filter=lfs diff=lfs merge=lfs -text
+*.step   filter=lfs diff=lfs merge=lfs -text
+*.stp    filter=lfs diff=lfs merge=lfs -text
+*.iges   filter=lfs diff=lfs merge=lfs -text
+*.igs    filter=lfs diff=lfs merge=lfs -text
+*.3mf    filter=lfs diff=lfs merge=lfs -text
+*.usd    filter=lfs diff=lfs merge=lfs -text
+*.usda   filter=lfs diff=lfs merge=lfs -text
+*.usdc   filter=lfs diff=lfs merge=lfs -text
+*.usdz   filter=lfs diff=lfs merge=lfs -text
+*.ply    filter=lfs diff=lfs merge=lfs -text
+
+# 모델 텍스처/보조 바이너리는 models/ 아래만 LFS 로 관리한다.
+models/**/*.png  filter=lfs diff=lfs merge=lfs -text
+models/**/*.jpg  filter=lfs diff=lfs merge=lfs -text
+models/**/*.jpeg filter=lfs diff=lfs merge=lfs -text
+models/**/*.tga  filter=lfs diff=lfs merge=lfs -text
+models/**/*.dds  filter=lfs diff=lfs merge=lfs -text
+models/**/*.ktx2 filter=lfs diff=lfs merge=lfs -text
+models/**/*.exr  filter=lfs diff=lfs merge=lfs -text
+models/**/*.hdr  filter=lfs diff=lfs merge=lfs -text
+models/**/*.bin  filter=lfs diff=lfs merge=lfs -text
+models/**/*.zip  filter=lfs diff=lfs merge=lfs -text

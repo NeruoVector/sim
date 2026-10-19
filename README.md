@@ -52,6 +52,7 @@ docker/
 config/
 ├── gz_bridge.yaml      # ros_gz_bridge 파라미터 (Gazebo -> ROS 2)
 └── px4.rviz            # RViz2 기본 설정
+models/                 # Gazebo 3D 모델 (Git LFS)
 ros2_ws/src/nv_telemetry/   # 예제 ROS 2 패키지
 scripts/setup-host.sh
 logs/                   # PX4 ulog 저장 위치
@@ -60,6 +61,24 @@ Makefile
 
 > `sim` 서비스는 프로필로 분리되어 있어 `platform` 레포에서 `docker compose up` 할 때는 뜨지 않습니다.
 > platform 에서 함께 띄우려면 `docker compose --profile sim up -d`.
+
+## 3D 모델 (Git LFS)
+
+Gazebo 기체/환경/소품 모델은 `models/` 에 두고 Git LFS 로 관리합니다.
+별도 모델 레포는 필요하지 않습니다.
+
+```bash
+git lfs install          # 최초 1회 (미설치 시 apt/brew 로 git-lfs 설치)
+cp -R /path/to/model models/drones/my-drone
+git add models/drones/my-drone
+git lfs ls-files
+git commit -m "feat: my-drone Gazebo 모델 추가"
+```
+
+- `models/` 는 컨테이너의 `/models` 로 마운트되고 `GZ_SIM_RESOURCE_PATH` 에 자동 추가됩니다.
+- `.dae`, `.stl`, `.obj`, `.fbx`, `.glb`, `.step`, `.usd*` 등은 `.gitattributes` 에서 LFS 로 추적합니다.
+- `model.config`, `model.sdf`, `*.urdf`, `*.xacro` 같은 텍스트 파일은 LFS 로 보내지 않습니다.
+- 자세한 구조와 주의 사항은 [`models/README.md`](models/README.md) 참고.
 
 ## 포트 / 인터페이스
 
