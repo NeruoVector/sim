@@ -41,6 +41,29 @@ models/drones/neurovector-x1/
 `.dae`, `.stl`, `.obj`, `.fbx`, `.glb`, `.blend`, `.step`, `.usd*` 와
 `models/` 아래 텍스처/`.bin`/`.zip` 파일이 자동으로 LFS 에 들어갑니다.
 
+## 포함된 샘플 모델
+
+`models/props/` 에 Gazebo Fuel CC0 샘플 10개가 들어 있습니다.
+각 디렉터리의 `ATTRIBUTION.md` 에 원본 URL 과 라이선스가 기록되어 있습니다.
+
+```text
+models/props/
+├── construction-barrel/
+├── construction-cone/
+├── jersey-barrier/
+├── fire-hydrant/
+├── oak-tree/
+├── pine-tree/
+├── prius-hybrid/
+├── office-building/
+├── dumpster/
+└── walking-actor/
+```
+
+`model://construction-barrel` 처럼 디렉터리 이름으로 참조할 수 있습니다.
+샘플을 다시 받으려면 `python3 scripts/fetch-sample-models.py --force` 를 실행하세요.
+모델 배치 예시는 [`../README.md`](../README.md) 의 "샘플(더미) 모델" 을 참고하세요.
+
 ## 모델 추가하기
 
 ```bash

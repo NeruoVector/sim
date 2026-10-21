@@ -75,10 +75,49 @@ git lfs ls-files
 git commit -m "feat: my-drone Gazebo 모델 추가"
 ```
 
-- `models/` 는 컨테이너의 `/models` 로 마운트되고 `GZ_SIM_RESOURCE_PATH` 에 자동 추가됩니다.
+- `models/` 는 컨테이너의 `/models` 로 마운트되고 `GZ_SIM_RESOURCE_PATH` 에
+  `/models`, `/models/props` 등이 자동 추가됩니다.
 - `.dae`, `.stl`, `.obj`, `.fbx`, `.glb`, `.step`, `.usd*` 등은 `.gitattributes` 에서 LFS 로 추적합니다.
 - `model.config`, `model.sdf`, `*.urdf`, `*.xacro` 같은 텍스트 파일은 LFS 로 보내지 않습니다.
 - 자세한 구조와 주의 사항은 [`models/README.md`](models/README.md) 참고.
+
+### 샘플(더미) 모델
+
+Gazebo Fuel 의 CC0 모델 10개를 `models/props/` 에 포함해 두었습니다.
+모두 `model://<이름>` URI 로 바로 사용할 수 있습니다.
+
+| 디렉터리 | 설명 | 크기(대략) |
+| --- | --- | --- |
+| `construction-barrel` | 공사용 배럴 | 0.6 × 1.0 m |
+| `construction-cone` | 라바콘 | 0.4 × 0.7 m |
+| `jersey-barrier` | 콘크리트 방호벽 | 2.0 × 0.8 m |
+| `fire-hydrant` | 소화전 | 0.4 × 1.0 m |
+| `oak-tree` | 참나무 | 3 × 6 m |
+| `pine-tree` | 소나무 | 3 × 7 m |
+| `prius-hybrid` | 승용차 | 1.8 × 1.5 m |
+| `office-building` | 사무용 건물 | 10 × 8 m |
+| `dumpster` | 쓰레기 수거함 | 2.0 × 1.4 m |
+| `walking-actor` | 보행자(애니메이션) | 0.5 × 1.7 m |
+
+Gazebo/PX4 를 실행한 뒤 원하는 위치에 배치할 수 있습니다.
+
+```bash
+make px4
+make spawn-obstacle MODEL=construction-barrel X=8 Y=0
+make spawn-obstacle MODEL=oak-tree X=15 Y=3
+make spawn-obstacle MODEL=walking-actor X=10 Y=-2
+```
+
+다시 내려받거나 다른 샘플을 추가하려면:
+
+```bash
+python3 scripts/fetch-sample-models.py           # 없는 모델만 다운로드
+python3 scripts/fetch-sample-models.py --force   # 전체 재다운로드
+```
+
+모델별 원본 URL/라이선스는 각 디렉터리의 `ATTRIBUTION.md` 에 있습니다.
+`GZ_SIM_RESOURCE_PATH` 에 `/models/props` 가 포함되므로 월드 파일에서도
+`<uri>model://construction-barrel</uri>` 처럼 참조할 수 있습니다.
 
 ## 포트 / 인터페이스
 
