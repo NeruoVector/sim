@@ -1,7 +1,11 @@
 COMPOSE := docker compose --profile sim
 SERVICE := sim
+MODEL ?= construction-barrel
+X ?= 8
+Y ?= 0
+Z ?= 0
 
-.PHONY: help init build up down restart shell x11 px4 headless agent foxglove rviz bridge topics gz-topics logs clean
+.PHONY: help init build up down restart shell x11 px4 headless agent foxglove rviz bridge spawn-obstacle topics gz-topics logs clean
 
 help:
 	@echo "make init      .env 생성 (없을 때만)"
@@ -15,6 +19,7 @@ help:
 	@echo "make foxglove  Foxglove bridge 실행 (ws://localhost:8765)"
 	@echo "make rviz      RViz2 실행"
 	@echo "make bridge    Gazebo -> ROS 2 토픽 브릿지 실행"
+	@echo "make spawn-obstacle MODEL=construction-barrel X=8 Y=0  샘플 장애물 배치"
 	@echo "make topics    ROS 2 토픽 목록"
 	@echo "make gz-topics Gazebo 토픽 목록"
 	@echo "make down      컨테이너 중지"
@@ -59,6 +64,13 @@ rviz:
 
 bridge:
 	$(COMPOSE) exec $(SERVICE) ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/config/gz_bridge.yaml
+
+spawn-obstacle:
+	$(COMPOSE) exec $(SERVICE) bash -lc 'ros2 run ros_gz_sim create \
+		-world "$${PX4_GZ_WORLD:-default}" \
+		-name "nv-$(MODEL)" \
+		-file "/models/props/$(MODEL)/model.sdf" \
+		-x $(X) -y $(Y) -z $(Z)'
 
 topics:
 	$(COMPOSE) exec $(SERVICE) ros2 topic list
