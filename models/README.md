@@ -22,7 +22,7 @@ git lfs install
 
 ```
 models/
-├── drones/        # 기체 모델 (예: neurovector-x1)
+├── drones/        # PX4 기체 외형 덮어쓰기 모델 (x500_base)
 ├── environments/  # 월드/환경 모델
 └── props/         # 나무, 건물, 표지판 등 소품
 ```
@@ -59,6 +59,10 @@ models/props/
 ├── dumpster/
 └── walking-actor/
 ```
+
+학교 데모는 `environments/school-demo/meshes/school_map.stl` 을 정적 월드 메시로,
+`drones/x500_base/meshes/drone.stl` 을 PX4 x500의 외형으로 사용합니다. PX4의
+x500 충돌 형상과 비행 물리는 유지합니다.
 
 `model://construction-barrel` 처럼 디렉터리 이름으로 참조할 수 있습니다.
 샘플을 다시 받으려면 `python3 scripts/fetch-sample-models.py --force` 를 실행하세요.
