@@ -1,0 +1,42 @@
+{
+  "name": "school-demo",
+  "synthetic": true,
+  "description": "가상 학교 테스트 데이터. 실제 학교·수령인·비행 허가 정보가 아닙니다.",
+  "origin": {"lat": 37.0, "lon": 127.0},
+  "drone": {
+    "id": "school-drone-001",
+    "sim_model": "gz_x500_depth",
+    "max_altitude_m": 120.0,
+    "max_power_w": 120.0,
+    "modeled_power_w": 120.0,
+    "battery_wh": 500.0,
+    "cruise_speed_mps": 3.0,
+    "radius_m": 0.5
+  },
+  "campus": {
+    "size_m": [120.0, 120.0],
+    "ground_center_enu": [30.0, 30.0, 0.0],
+    "mesh_uri": "model://school-demo/meshes/school_map.stl",
+    "mesh_pose_enu": [30.0, 30.0, 0.01],
+    "mesh_scale": [0.216738, 0.216738, 0.216738]
+  },
+  "takeoff_enu": [0.0, 0.0, 0.15],
+  "route_start_enu": [0.0, 0.0, 8.0],
+  "outdoor_goal_enu": [60.0, 80.0, 8.0],
+  "buildings": [
+    {"id": "school-main", "center_enu": [30.0, 50.0, 6.0], "size_m": [40.0, 20.0, 12.0], "no_fly_ceiling_m": 15.0}
+  ],
+  "playground": {"center_enu": [25.0, 12.0, 0.01], "size_m": [30.0, 20.0, 0.02]},
+  "window": {
+    "position_enu": [30.0, 40.0, 8.0],
+    "outward_bearing_deg": 180.0,
+    "standoff_m": 3.0,
+    "approach_distance_m": 15.0,
+    "hold_seconds": 30.0
+  },
+  "obstacles": [
+    {"id": "student", "label": "person", "priority": 1, "position_enu": [3.0, 0.0, 8.0], "radius_m": 0.4},
+    {"id": "school-van", "label": "car", "priority": 2, "position_enu": [14.0, 0.0, 8.0], "radius_m": 1.0},
+    {"id": "leaves", "label": "leaf", "priority": 3, "position_enu": [10.0, 15.0, 8.0], "radius_m": 0.1}
+  ]
+}

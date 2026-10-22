@@ -4,8 +4,9 @@ MODEL ?= construction-barrel
 X ?= 8
 Y ?= 0
 Z ?= 0
+HEADLESS ?= 0
 
-.PHONY: help init build up down restart shell x11 px4 headless agent foxglove rviz bridge spawn-obstacle topics gz-topics logs clean
+.PHONY: help init build up down restart shell x11 px4 headless school school-check school-test school-test-live agent foxglove rviz bridge spawn-obstacle topics gz-topics logs clean
 
 help:
 	@echo "make init      .env 생성 (없을 때만)"
@@ -15,6 +16,10 @@ help:
 	@echo "make shell     컨테이너 셸 접속"
 	@echo "make px4       PX4 SITL + Gazebo 실행 (GUI)"
 	@echo "make headless  PX4 SITL + Gazebo 실행 (헤드리스)"
+	@echo "make school    가상 학교 + 기존 gz_x500_depth (HEADLESS=1 가능)"
+	@echo "make school-check  학교 fixture / 생성 SDF 일치 검사 (Docker 불필요)"
+	@echo "make school-test  학교 데이터로 Rust/C++ 경로·회피 테스트 (Docker 불필요)"
+	@echo "make school-test-live  일회용 DB에서 실제 경로·배송 API까지 검증"
 	@echo "make agent     Micro XRCE-DDS Agent 실행 (ROS 2 <-> PX4)"
 	@echo "make foxglove  Foxglove bridge 실행 (ws://localhost:8765)"
 	@echo "make rviz      RViz2 실행"
@@ -51,7 +56,14 @@ px4:
 	$(COMPOSE) exec $(SERVICE) bash -lc 'HEADLESS=0 px4-gazebo'
 
 headless:
-	$(COMPOSE) exec $(SERVICE) bash -lc 'HEADLESS=1 px4-gazebo'
+	$(COMPOSE) exec $(SERVICE) bash -lc 'HEADLESS=1 px4-gazebo -d'
+
+school-check:
+	python3 scripts/generate-school-world.py --check
+
+school: school-check
+	$(COMPOSE) exec -e NV_SCHOOL_SCENE=1 -e PX4_GZ_WORLD=school -e HEADLESS=$(HEADLESS) $(SERVICE) \
+		/usr/local/bin/nv-entrypoint.sh bash -lc 'if [ "$$HEADLESS" = 1 ]; then px4-gazebo -d; else px4-gazebo; fi'
 
 agent:
 	$(COMPOSE) exec $(SERVICE) MicroXRCEAgent udp4 -p 8888
@@ -84,3 +96,9 @@ logs:
 clean:
 	$(COMPOSE) down --rmi local -v
 	rm -rf logs/*.ulg
+
+school-test:
+	python3 scripts/test-school.py
+
+school-test-live:
+	python3 scripts/test-school.py --with-backend

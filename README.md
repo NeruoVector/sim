@@ -210,3 +210,23 @@ compose 에 `ipc: host` 가 들어 있습니다. 호스트와 ROS 2 를 함께 �
 ## 라이선스
 
 MIT
+
+## 가상 학교 배송 테스트
+
+[학교 테스트 안내](docs/school-demo.md)를 참고하세요. 실제 학교 정보 대신
+`fixtures/school.json`의 가상 학교·창문·드론 사양·1/2/3단계 장애물을 사용합니다.
+같은 파일에서 Gazebo 월드와 경로·회피 테스트 입력을 만듭니다.
+
+```bash
+make school-test          # Rust/C++ 실제 로직의 오프라인 교차 검증
+make school-test-live     # 일회용 DB에서 실제 API·배송 상태 전환 검증
+make up
+make school HEADLESS=1    # 기존 PX4 gz_x500_depth + 가상 학교, 비행 시동 명령 없음
+```
+
+Docker Desktop에서 X11 마운트가 거부되면 `SIM_X11_SOCKET=./logs/x11`을
+`make up`과 `make school HEADLESS=1` 앞에 붙이세요.
+
+오프라인 검증 결과는 `logs/school-tests/report.json`에 저장됩니다. 운영 DB에는
+더미 데이터를 쓰지 않으며, Gazebo 표시용 위험 표식은 실제 사람·차량 모델을 대체하는
+색상 박스입니다. 센서 영상에 대한 인식 정확도 평가는 별도로 수행해야 합니다.

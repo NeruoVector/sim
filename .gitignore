@@ -2,6 +2,7 @@
 logs/*
 !logs/.gitkeep
 *.ulg
+__pycache__/
 
 # ROS 2 빌드 산출물
 ros2_ws/build/
