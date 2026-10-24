@@ -33,6 +33,8 @@ services:
       - ./models:/models:ro
       - ./worlds:/worlds:ro
       - ./fixtures:/fixtures:ro
+      - ./scripts:/scripts:ro
+      - ./logs:/school-results:ro
       - ./logs:/root/.local/share/px4/rootfs/fs/log
       # Gazebo / RViz2 GUI 용 X11 소켓 (호스트에서 `make x11` 먼저 실행)
       - ${SIM_X11_SOCKET:-/tmp/.X11-unix}:/tmp/.X11-unix:rw

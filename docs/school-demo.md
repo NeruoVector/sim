@@ -1,5 +1,7 @@
 # Synthetic school scene
 
+실제 Gazebo/PX4 → ROS 2 → RViz/Foxglove 연결은 [학교 스택 검증](school-stack.md)을 참고하세요.
+
 This is a fictional school fixture, not a real school, recipient address, or authorized flight site. `sim/fixtures/school.json` is the single source for scene geometry, the aircraft selection, and mission test inputs. All positions are local ENU metres: x east, y north, z up. The geographic origin is synthetic.
 
 The campus is the supplied `School_map.stl`, scaled to 120 m wide and loaded as a static visual and collision mesh. Fixture boxes remain for the ground and school no-fly collision proxy; their duplicate visuals are hidden. The priority markers represent logical obstacle test positions; the red marker named `student` is a geometric proxy at test flight altitude, not a realistically modeled child. These proxies are unsuitable as evidence of YOLO person/car detection accuracy.
@@ -24,6 +26,26 @@ make school-check
 The generator writes `models/environments/school-demo/model.sdf`, `model.config`, and `worlds/school.sdf`. Its check parses the XML, checks fixture geometry and the campus STL reference, asserts that the world contains no aircraft, and fails if a generated file is stale. Python's standard library is sufficient. Edit the JSON fixture and regenerate; editing the generated SDF directly will fail the check.
 
 ## PX4 and Gazebo
+
+### 브라우저에서 보기 (Docker·X11 불필요)
+
+```bash
+cd sim
+make school-test  # 결과가 없거나 데이터를 바꿨을 때 실행
+make school-view
+```
+
+`http://127.0.0.1:8766/viewer/`에서 학교·드론 STL, 선택 경로와 대안,
+창문 바깥 정지 지점, 1/2/3단계 위험 표식을 표시합니다. 드래그로 회전하고 휠로 확대합니다.
+목적지 선택, 재생/일시정지, 속도 조절과 진행률 슬라이더를 사용할 수 있습니다.
+WebGL을 지원하는 브라우저가 필요하며 외부 CDN·추가 패키지를 사용하지 않습니다.
+
+저장된 `logs/school-tests/`의 API 계획을 우선 표시하고, 없으면 오프라인 계획을 표시합니다.
+계획이 없으면 학교·드론·위험 표식만 표시하고 테스트 실행을 안내합니다.
+이 화면은 저장된 계획의 시간에 따른 위치 보간입니다. 실시간 Gazebo/PX4 텔레메트리나
+회피 제어 시뮬레이션이 아니며, STL 지형과 경로의 실제 충돌 검증도 포함하지 않습니다.
+금지구역 선은 fixture의 논리적인 건물 영역입니다. 최신 테스트 결과는 새로고침해 반영합니다.
+서버는 localhost에만 열리며 Ctrl+C로 종료합니다.
 
 With the project's existing simulation image and container ready:
 

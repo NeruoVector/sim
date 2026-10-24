@@ -8,7 +8,7 @@ import time
 import urllib.error
 import urllib.request
 import uuid
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parents[2]
@@ -264,7 +264,7 @@ def check_backend(work: Path, fixture: dict, checker_args: list[str]) -> dict:
                         "route_id": plan["route_id"],
                         "drone_id": drone["id"],
                         "cargo": "dummy-school",
-                        "scheduled_at": datetime.now(UTC).isoformat(),
+                        "scheduled_at": datetime.now(timezone.utc).isoformat(),
                         "notes": "Synthetic API test; no motor or physical flight",
                     },
                     accepted=(201,),

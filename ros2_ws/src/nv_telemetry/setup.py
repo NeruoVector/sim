@@ -24,6 +24,7 @@ setup(
     entry_points={
         "console_scripts": [
             "telemetry = nv_telemetry.telemetry_node:main",
+            "school_scene = nv_telemetry.school_scene:main",
         ],
     },
 )

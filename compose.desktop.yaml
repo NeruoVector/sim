@@ -1,0 +1,6 @@
+# Docker Desktop without host networking: keep ROS/DDS inside the sim container.
+services:
+  sim:
+    network_mode: bridge
+    ports:
+      - "127.0.0.1:8765:8765"
