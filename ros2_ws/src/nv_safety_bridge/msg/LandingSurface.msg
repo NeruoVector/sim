@@ -1,0 +1,10 @@
+geometry_msgs/Vector3 ground_point
+float64 half_width_m
+float64 half_length_m
+float64 slope_deg
+float64 roughness_m
+float64 position_error_m
+float64 confidence
+float64 observed_at_s
+bool sensors_ready
+bool support_confirmed

@@ -2,6 +2,9 @@
 
 드론 시뮬레이션 환경입니다. 기성 PX4 SITL 이미지를 기반으로 RViz2 · Foxglove 를 더해 한 컨테이너에서 돌립니다.
 
+[안전 브리지 실행 환경](docs/safety-bridge.md): Conan·ROS 2 환경 구성,
+실제 PX4 상태를 사용하는 안전 판단·정지/복귀 명령 연결과 통합 검증을 제공합니다.
+
 | 구성 요소 | 버전 / 이미지 |
 | --- | --- |
 | PX4 Autopilot (SITL) | `px4io/px4-sitl-gazebo-ros2` (패키징된 펌웨어, 소스 빌드 불필요) |

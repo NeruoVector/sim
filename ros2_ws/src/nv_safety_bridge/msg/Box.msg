@@ -1,0 +1,2 @@
+geometry_msgs/Vector3 minimum
+geometry_msgs/Vector3 maximum

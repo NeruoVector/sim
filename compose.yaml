@@ -29,6 +29,7 @@ services:
       LIBGL_ALWAYS_SOFTWARE: ${LIBGL_ALWAYS_SOFTWARE:-0}
     volumes:
       - ./ros2_ws:/ros2_ws
+      - ../drone:/drone:ro
       - ./config:/config:ro
       - ./models:/models:ro
       - ./worlds:/worlds:ro

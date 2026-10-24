@@ -1,0 +1,2 @@
+nv_safety_bridge/Box bounds
+float64 observed_at_s

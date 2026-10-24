@@ -1,0 +1,11 @@
+string<=128 id
+int32 priority
+float64 confidence
+float64 observed_at_s
+bool position_known
+geometry_msgs/Vector3 position
+bool velocity_known
+geometry_msgs/Vector3 velocity
+bool distance_known
+float64 distance_m
+float64 radius_m
