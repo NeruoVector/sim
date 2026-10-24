@@ -28,6 +28,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # 사용자 ROS 2 워크스페이스 (호스트에서 마운트)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends xvfb xauth \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN mkdir -p /ros2_ws/src
 
 # 대화형 셸 편의 설정

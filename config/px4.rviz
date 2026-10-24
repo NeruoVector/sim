@@ -10,6 +10,23 @@ Panels:
 Visualization Manager:
   Class: ""
   Displays:
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: School Scene
+      Topic:
+        Value: /school/scene
+        Depth: 1
+        Durability Policy: Transient Local
+        Reliability Policy: Reliable
+    - Class: rviz_default_plugins/Path
+      Enabled: true
+      Name: Planned Route
+      Topic:
+        Value: /school/planned_route
+        Depth: 1
+        Durability Policy: Transient Local
+        Reliability Policy: Reliable
+      Color: 40; 240; 180
     - Class: rviz_default_plugins/Grid
       Enabled: true
       Name: Grid
@@ -47,10 +64,10 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 15
+      Distance: 140
       Focal Point:
-        X: 0
-        Y: 0
+        X: 30
+        Y: 30
         Z: 0
       Name: Current View
       Pitch: 0.5

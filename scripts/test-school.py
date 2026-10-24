@@ -245,6 +245,7 @@ def main():
                 "PASS: isolated backend API planning, drone cross-check and dispatch gate"
             )
         print(f"Report: {destination / 'report.json'}")
+        print("View: sim 디렉터리에서 make school-view → http://127.0.0.1:8766/viewer/")
 
 
 if __name__ == "__main__":

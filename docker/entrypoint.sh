@@ -36,6 +36,36 @@ PY
     # The packaged px4-gazebo wrapper resets PX4_GZ_WORLDS on every launch.
     px4_install="$(dirname "$(dirname "$(readlink -f "$(command -v px4-gazebo)")")")"
     cp /worlds/school.sdf "$px4_install/share/gz/worlds/school.sdf"
+    # School software-rendering profile; preserve the stock sensor geometry/FOV.
+    mkdir -p /tmp/nv-school-models
+    cp -a "$px4_install/share/gz/models/OakD-Lite" /tmp/nv-school-models/
+    python3 - <<'PY'
+import xml.etree.ElementTree as ET
+path = '/tmp/nv-school-models/OakD-Lite/model.sdf'
+tree = ET.parse(path)
+for sensor in tree.findall('.//sensor'):
+    sensor.find('update_rate').text = '5'
+    if sensor.get('type') == 'camera':
+        sensor.find('camera/image/width').text = '640'
+        sensor.find('camera/image/height').text = '360'
+tree.write(path, encoding='utf-8', xml_declaration=True)
+PY
+    # x500_depth lacks the ground-truth publisher present in x500_vision.
+    python3 - "$px4_install/share/gz/models/x500_depth/model.sdf" <<'PY'
+import sys
+import xml.etree.ElementTree as ET
+path = sys.argv[1]
+tree = ET.parse(path)
+model = tree.find('model')
+if model.find("plugin[@name='gz::sim::systems::OdometryPublisher']") is None:
+    plugin = ET.SubElement(model, 'plugin', filename='gz-sim-odometry-publisher-system', name='gz::sim::systems::OdometryPublisher')
+    for name, value in [('dimensions', '3'), ('odom_frame', 'map'), ('robot_base_frame', 'x500_depth_0'), ('odometry_publish_frequency', '20')]:
+        ET.SubElement(plugin, name).text = value
+    tree.write(path, encoding='utf-8', xml_declaration=True)
+PY
+    export GZ_SIM_RESOURCE_PATH="/tmp/nv-school-models:$GZ_SIM_RESOURCE_PATH"
+    # Both PX4 and ROS use simulated time; wall-time synchronization stalls slow SITL.
+    export PX4_PARAM_UXRCE_DDS_SYNCT=0
 fi
 
 exec "$@"

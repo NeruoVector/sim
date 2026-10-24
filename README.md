@@ -213,6 +213,8 @@ MIT
 
 ## 가상 학교 배송 테스트
 
+실제 ROS/RViz/Foxglove 연동은 [학교 스택 실행·검증 안내](docs/school-stack.md)를 참고하세요.
+
 [학교 테스트 안내](docs/school-demo.md)를 참고하세요. 실제 학교 정보 대신
 `fixtures/school.json`의 가상 학교·창문·드론 사양·1/2/3단계 장애물을 사용합니다.
 같은 파일에서 Gazebo 월드와 경로·회피 테스트 입력을 만듭니다.
@@ -220,6 +222,7 @@ MIT
 ```bash
 make school-test          # Rust/C++ 실제 로직의 오프라인 교차 검증
 make school-test-live     # 일회용 DB에서 실제 API·배송 상태 전환 검증
+make school-view          # http://127.0.0.1:8766/viewer/ · STL/경로/위험 요소와 계획 재생
 make up
 make school HEADLESS=1    # 기존 PX4 gz_x500_depth + 가상 학교, 비행 시동 명령 없음
 ```

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>학교 배송 시각화 · NeuroVector</title>
+<link rel="stylesheet" href="style.css">
+<header><div><small>NEUROVECTOR / SCHOOL DEMO</small><h1>학교 배송 경로</h1></div><span class="badge">계획 재생 · 실시간 비행 아님</span></header>
+<main>
+  <section class="scene" aria-label="학교 3D 장면">
+    <canvas id="scene" tabindex="0" aria-label="마우스로 회전하고 휠로 확대하는 학교와 드론 3D 지도"></canvas>
+    <div id="loading" role="status">학교·드론 모델을 불러오는 중…</div>
+    <div class="hint">드래그: 회전 · 휠: 확대 · <button id="reset">시점 초기화</button></div>
+    <div class="legend"><span style="--c:#39dbc2">선택 경로</span><span style="--c:#ff876f">거부된 후보</span><span style="--c:#87b8ff">창문 밖 정지</span></div>
+  </section>
+  <aside>
+    <h2>배송 계획</h2>
+    <label for="mission">목적지</label>
+    <select id="mission"><option value="window">창문 밖 정지·수령</option><option value="outdoor">학교 외부 배송</option></select>
+    <p id="source" class="muted"></p>
+    <div id="metrics" class="metrics"></div>
+    <div class="controls"><button id="play" disabled>경로 재생</button><label>속도 <select id="speed"><option value="1">1×</option><option value="3" selected>3×</option><option value="10">10×</option></select></label></div>
+    <label for="progress">계획 진행률 <output id="progress-label">0%</output></label>
+    <input type="range" id="progress" min="0" max="1000" value="0">
+    <p id="position" class="muted"></p>
+    <h2>위험 요소</h2><div id="obstacles"></div>
+    <h2>저장된 테스트 결과</h2><p id="summary" role="status">불러오는 중…</p><div id="cases"></div>
+    <p class="muted">가상 학교 데이터입니다. 위험 표식은 시험용 위치이며, 경로 재생은 회피 명령이나 모터를 제어하지 않습니다. 경로 검증은 더미 금지구역 기준이며 STL 지형과의 충돌은 검증하지 않습니다.</p>
+  </aside>
+</main>
+<script type="module" src="app.js"></script>
+</html>
