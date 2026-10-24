@@ -1,4 +1,5 @@
 #include "command_channel.hpp"
+#include "rgb_ultrasound.hpp"
 #include "nv_safety_bridge/msg/safety_decision.hpp"
 #include <cmath>
 namespace nv_bridge {
@@ -6,7 +7,7 @@ namespace n = neurovector::navigation;
 using Observation = nv_safety_bridge::msg::DeliveryObservation;
 class SafetyBridge : public rclcpp::Node {
 public:
-  SafetyBridge() : Node("nv_safety_bridge"), px4_(*this), commands_(*this, px4_) {
+  SafetyBridge() : Node("nv_safety_bridge"), px4_(*this), commands_(*this, px4_), sensors_(*this) {
     decision_publisher_ = create_publisher<nv_safety_bridge::msg::SafetyDecision>("safety/decision", 10);
     observation_subscriber_ = create_subscription<Observation>("safety/observation", rclcpp::QoS(1).best_effort(),
       [this](Observation::ConstSharedPtr m) {
@@ -29,7 +30,11 @@ private:
       }
       input_->flight.now_s = input_->destination.now_s = time;
       px4_.apply(*input_, *observation_);
+      input_->flight.sensors_ready = observation_->sensors_ready;
+      const auto sensor_reason = sensors_.apply(*input_);
       d = navigator_.update(*input_);
+      if (!sensor_reason.empty() && d.safety == n::SafetyDirective::hold)
+        d.navigation.reason = sensor_reason;
     } else {
       // Do not start a mission supervisor until its first coherent observation.
       d.safety = n::SafetyDirective::delegate_to_autopilot;
@@ -54,6 +59,7 @@ private:
   }
   Px4State px4_;
   CommandChannel commands_;
+  RgbUltrasound sensors_;
   n::DeliveryNavigator navigator_;
   Observation::ConstSharedPtr observation_;
   std::optional<n::DeliveryInput> input_;

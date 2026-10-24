@@ -31,6 +31,7 @@ conan create ../drone --build=missing --no-remote -s build_type=Release -s compi
 | `snapshot.cpp` | Bounded typed ROS observation to library input conversion |
 | `px4_state.cpp` | Actual PX4 state, NED-to-ENU conversion and estimator freshness |
 | `command_channel.cpp` | PX4 interventions, command ACKs and bounded retries |
+| `rgb_ultrasound.cpp` | RGB calibration/freshness and forward/down ultrasound gates |
 | `safety_bridge.cpp` | 100 Hz decision loop and mission failure latch |
 
 The node retains an immutable observation message and converts its arrays only
@@ -112,6 +113,75 @@ requires real observation producers to permit a mission.
 No physical sensors, trained window detector, CSI capture/MUSIC estimator,
 recipient recognition or payload hardware are created by this runtime. Those
 hardware-specific producers remain necessary for physical flight.
+
+## RGB camera with forward and downward ultrasound
+
+The selected hardware arrangement is a normal RGB camera, a forward ultrasound
+sensor and a downward ultrasound sensor. `make safety-bridge` loads
+`config/rgb_ultrasound.yaml`. Calibration defaults to false and the combined
+range/mount error bound defaults to zero (unconfigured), so connecting a driver
+alone cannot permit motion. Supply the measured values for the actual hardware.
+These mount/calibration parameters are read-only during the process lifetime;
+restart an explicitly authorized supervisor after changing the startup YAML.
+
+| ROS topic | Type | Required mounting frame |
+|---|---|---|
+| `/camera/image_raw` | `sensor_msgs/msg/Image` (`rgb8` or `bgr8`) | `camera_frame` |
+| `/camera/camera_info` | `sensor_msgs/msg/CameraInfo` | same optical frame |
+| `/ultrasound/front` | `sensor_msgs/msg/Range`, `ULTRASOUND` | `front_ultrasound_frame` |
+| `/ultrasound/down` | `sensor_msgs/msg/Range`, `ULTRASOUND` | `down_ultrasound_frame` |
+
+Use topic remapping to match drivers. Image dimensions/buffer layout, intrinsic
+matrix, matching frame IDs and Image/CameraInfo time agreement within 50 ms are
+checked. Cropped/binned images need corrected full-image calibration before this
+adapter can use them. Each input must advance its own acquisition timestamp and
+remain fresh within 200 ms on both ROS and wall clocks. A fresh perception flag
+cannot conceal an old camera or disconnected ultrasound sensor. The original
+perception `sensors_ready` is still required; receiving RGB frames does not prove
+that a detector has inspected them.
+
+Ultrasound drivers must publish the actual model's minimum/maximum range and
+field of view. The gate rejects wrong radiation type, swapped frames, NaN,
+nonpositive/out-of-limit returns and unconfigured error bounds. Front and down
+mounts must be calibrated separately: Range's sensor +X axis points forward and
+downward respectively. `range_and_mount_error_m` must bound both range error and
+the sensor-to-aircraft-centre offset, including operating temperature and noise.
+There is no TF lookup or automatic mounting inference in this adapter.
+
+The forward return must exceed the current reaction/braking distance, aircraft
+radius, clearance and calibrated errors. Its age also expands the bound for
+aircraft motion and the existing unknown-object speed limit. An absent forward
+echo is unknown and blocks motion; it does not mean the whole view is clear.
+A downward +Inf reading can remain explicitly unknown during cruise above the
+sensor's useful range, but cannot authorize descent. During landing the downward
+return must agree with the independently measured landing-surface height, with
+aircraft tilt, beam width, sample time and position error accounted for.
+
+A single ultrasonic cone is not a depth image. The code never assigns its range
+to every RGB detection or fabricates window centres, ground support, slope,
+roughness, free-space coverage or a clear landing footprint. RGB metric window
+localization still needs calibrated geometry and surveyed reference data or an
+independent depth estimate. Landing support/footprint and object observations
+remain mandatory inputs from perception. Obstacles outside the beams remain
+the responsibility of that perception system. The new gate does not replace
+GPS, IMU, the gust reflex or the CSI gate.
+
+Hardware model, interface, update rate and error bounds are still unspecified.
+No GPIO/UART/I2C driver or fixed pin assignment is guessed. Schedule front/down
+ultrasound triggers according to the actual devices to avoid acoustic crosstalk;
+do not treat a failed echo as clear space. The ROS tests inject camera and range
+messages on isolated domains, not an acoustic propagation or weather model.
+
+The cone/arc semantics and ultrasound radiation identifier follow the upstream
+[ROS Range message contract](https://github.com/ros2/common_interfaces/blob/rolling/sensor_msgs/msg/Range.msg).
+
+The RGB/ultrasound extension was verified in a strict Release build. All three
+ROS bridge scenarios and 26 sensor-gate cases passed under the registered CTest
+suite (zero errors, failures or skips). Cases include stale/replayed camera and
+sonar frames, bad image buffers/intrinsics, sensor dropout, wrong radiation/frame,
+invalid/out-of-range distances, braking clearance, missing landing support,
+landing-height disagreement and immutable calibration parameters. The original
+RGB dropout case failed before the new gate and passed after it was connected.
 
 ## Observed verification
 

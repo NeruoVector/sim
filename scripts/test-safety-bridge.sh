@@ -20,7 +20,9 @@ for scenario in accepted denied replay; do
         freeze=true
     fi
     bridge_log="/tmp/nv-safety-bridge-$scenario.log"
-    "$package_prefix/lib/nv_safety_bridge/safety_bridge" >"$bridge_log" 2>&1 &
+    "$package_prefix/lib/nv_safety_bridge/safety_bridge" --ros-args \
+        -p camera_calibrated:=true -p ultrasound_calibrated:=true \
+        -p range_and_mount_error_m:=0.1 >"$bridge_log" 2>&1 &
     bridge_pid=$!
     trap 'kill "$bridge_pid" 2>/dev/null || true; wait "$bridge_pid" 2>/dev/null || true' EXIT
     if ! "$package_prefix/lib/nv_safety_bridge/bridge_integration_test" --ros-args -p reject_commands:="$reject" -p freeze_pose:="$freeze"; then
@@ -31,3 +33,5 @@ for scenario in accepted denied replay; do
     wait "$bridge_pid" || true
     trap - EXIT
 done
+export ROS_DOMAIN_ID=76
+"$package_prefix/lib/nv_safety_bridge/rgb_ultrasound_test"
