@@ -37,6 +37,7 @@ nav::Input base_input() {
   nav::Input input;
   input.now_s = 10;
   input.sensors_ready = true;
+  input.state = {nav::FlightMode::transit, 10, true, true, true, 0, 0, true, true};
   input.observations_at_s = 10;
   input.position = {0, 0, 8};
   input.velocity = {2, 0, 0};
