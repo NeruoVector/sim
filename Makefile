@@ -8,7 +8,7 @@ Z ?= 0
 HEADLESS ?= 0
 MISSION ?= window
 
-.PHONY: help init build up down restart shell x11 px4 headless school school-gui school-check school-test school-test-live school-view school-bridge school-scene school-stack-check agent foxglove rviz rviz-headless bridge spawn-obstacle topics gz-topics logs clean
+.PHONY: help init build up down restart shell x11 px4 headless school school-gui school-check school-test school-test-live school-view school-bridge school-scene school-stack-check agent foxglove rviz rviz-headless bridge spawn-obstacle topics gz-topics logs clean safety-build safety-test safety-bridge safety-sitl-check
 
 help:
 	@echo "make init      .env 생성 (없을 때만)"
@@ -27,6 +27,10 @@ help:
 	@echo "make school-bridge  학교 RGB/depth/point cloud/pose → ROS 2"
 	@echo "make school-scene  학교·저장된 경로·실시간 기체 위치 → RViz/Foxglove"
 	@echo "make school-stack-check  실행 중인 스택의 실제 ROS 메시지·TF 검증"
+	@echo "make safety-build  C++ 안전 판단 + ROS 2/PX4 브리지 빌드"
+	@echo "make safety-test  격리된 ROS 도메인에서 명령·응답 통합 검증"
+	@echo "make safety-sitl-check  실행 중인 disarmed SITL에서 실제 텔레메트리·동작 차단 확인"
+	@echo "make safety-bridge  PX4 상태 → 안전 판단 → 정지/복귀 명령 연결"
 	@echo "make rviz-headless  가상 X 화면에서 RViz 렌더링 (호스트 X11 불필요)"
 	@echo "make agent     Micro XRCE-DDS Agent 실행 (ROS 2 <-> PX4)"
 	@echo "make foxglove  Foxglove bridge 실행 (ws://localhost:8765)"
@@ -130,3 +134,15 @@ school-test-live:
 school-view:
 	@echo "브라우저에서 http://127.0.0.1:8766/viewer/ 접속 (계획 재생, 실시간 비행 아님)"
 	python3 -m http.server 8766 --bind 127.0.0.1 --directory .
+
+safety-build:
+	$(ROS_EXEC) bash -lc 'cd /ros2_ws && MAKEFLAGS=-j1 CMAKE_BUILD_PARALLEL_LEVEL=1 colcon build --packages-select nv_safety_bridge --parallel-workers 1 --cmake-args -DNEUROVECTOR_DRONE_SOURCE_DIR=/drone -DCMAKE_BUILD_TYPE=Release'
+
+safety-test:
+	$(ROS_EXEC) bash /scripts/test-safety-bridge.sh
+
+safety-bridge:
+	$(ROS_EXEC) ros2 run nv_safety_bridge safety_bridge
+
+safety-sitl-check:
+	$(ROS_EXEC) bash /scripts/check-safety-sitl.sh

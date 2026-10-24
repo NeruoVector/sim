@@ -1,0 +1,16 @@
+string<=128 id
+geometry_msgs/Vector3 transmitter_enu
+geometry_msgs/Vector3 receiver_enu
+float64 azimuth_rad
+float64 elevation_rad
+float64 excess_delay_s
+float64 delay_error_s
+float64 angular_error_rad
+float64 anchor_error_m
+float64 observed_at_s
+float64 confidence
+float64 object_radius_m
+bool calibrated
+bool path_resolved
+bool velocity_known
+geometry_msgs/Vector3 tracked_velocity_enu_mps

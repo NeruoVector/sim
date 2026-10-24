@@ -1,0 +1,11 @@
+float64 observed_at_s
+uint64 observation_sequence
+string directive
+string action
+float64 desired_speed_mps
+string reason
+bool handoff_ready
+bool disarm_allowed
+string target_window_id
+bool command_pending
+int32 last_command_result
