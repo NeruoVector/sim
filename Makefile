@@ -142,7 +142,7 @@ safety-test:
 	$(ROS_EXEC) bash /scripts/test-safety-bridge.sh
 
 safety-bridge:
-	$(ROS_EXEC) ros2 run nv_safety_bridge safety_bridge
+	$(ROS_EXEC) ros2 run nv_safety_bridge safety_bridge --ros-args --params-file /config/rgb_ultrasound.yaml
 
 safety-sitl-check:
 	$(ROS_EXEC) bash /scripts/check-safety-sitl.sh

@@ -1,0 +1,9 @@
+nv_safety_bridge:
+  ros__parameters:
+    camera_frame: camera_optical_frame
+    front_ultrasound_frame: ultrasound_front
+    down_ultrasound_frame: ultrasound_down
+    # Set only after measuring the actual intrinsics, mounts and range error.
+    camera_calibrated: false
+    ultrasound_calibrated: false
+    range_and_mount_error_m: 0.0

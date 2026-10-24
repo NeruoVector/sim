@@ -1,4 +1,5 @@
 #include "px4_topics.hpp"
+#include "sensor_stream.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <px4_msgs/msg/vehicle_local_position.hpp>
 #include <px4_msgs/msg/vehicle_attitude.hpp>
@@ -75,10 +76,12 @@ int main(int argc, char **argv) {
       ack_pub->publish(ack);
     });
   auto observation = fixture();
+  SensorStream sensors(*node);
   std::optional<uint64_t> frozen_stamp;
   auto tick = [&](bool publish_observation = true) {
     const double now = node->now().seconds();
     const auto stamp = static_cast<uint64_t>(now * 1e6);
+    sensors.publish(node->now());
     px4_msgs::msg::VehicleLocalPosition p;
     p.timestamp = p.timestamp_sample = stamp;
     if (frozen_stamp) p.timestamp_sample = *frozen_stamp;
@@ -124,6 +127,17 @@ int main(int argc, char **argv) {
       rclcpp::shutdown();
       return 0;
     }
+    sensors.camera_enabled = false;
+    for (int i = 0; i < 40; ++i) tick();
+    require(decision.directive == "hold", "fresh observation flag concealed a missing RGB camera");
+    sensors.camera_enabled = true;
+    for (int i = 0; i < 30; ++i) tick();
+    require(decision.directive == "continue_mission", "fresh RGB camera did not restore the sensor gate");
+    sensors.front.range = 0.3;
+    for (int i = 0; i < 30; ++i) tick();
+    require(decision.directive == "hold", "near front ultrasound return did not block movement");
+    sensors.front.range = 8;
+    for (int i = 0; i < 30; ++i) tick();
     const int initial_holds = holds;
     nav_state = Status::NAVIGATION_STATE_OFFBOARD;
     observation.wind_enu_mps.x = 10;
