@@ -25,6 +25,7 @@ RUN apt-get update \
         iputils-ping \
         net-tools \
         python3-pip \
+        ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 # 사용자 ROS 2 워크스페이스 (호스트에서 마운트)

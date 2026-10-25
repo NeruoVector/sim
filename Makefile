@@ -7,10 +7,13 @@ Y ?= 0
 Z ?= 0
 HEADLESS ?= 0
 MISSION ?= window
+DRONE_ID ?= drone-001
+MEDIA_HOST ?= 127.0.0.1
 
 .PHONY: help init build up down restart shell x11 px4 headless school school-gui school-check school-test school-test-live school-view school-bridge school-scene school-stack-check agent foxglove rviz rviz-headless bridge spawn-obstacle topics gz-topics logs clean safety-build safety-test safety-bridge safety-sitl-check
 
 help:
+	@echo "make camera-stream MEDIA_HOST=서버주소 DRONE_ID=drone-001  ROS RGB → SRT → WebRTC"
 	@echo "make init      .env 생성 (없을 때만)"
 	@echo "make x11       호스트 X11 접근 허용 (GUI 사용 시 1회)"
 	@echo "make build     시뮬레이션 이미지 빌드"
@@ -104,6 +107,10 @@ school-scene:
 
 school-stack-check:
 	$(ROS_EXEC) python3 /scripts/verify-school-ros.py
+
+.PHONY: camera-stream
+camera-stream:
+	$(ROS_EXEC) python3 /ros2_ws/src/nv_telemetry/nv_telemetry/camera_stream.py --ros-args -p drone_id:=$(DRONE_ID) -p srt_host:=$(MEDIA_HOST)
 
 spawn-obstacle:
 	$(COMPOSE) exec $(SERVICE) bash -lc 'ros2 run ros_gz_sim create \
