@@ -25,6 +25,7 @@ setup(
         "console_scripts": [
             "telemetry = nv_telemetry.telemetry_node:main",
             "school_scene = nv_telemetry.school_scene:main",
+            "camera_stream = nv_telemetry.camera_stream:main",
         ],
     },
 )
