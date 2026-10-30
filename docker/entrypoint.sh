@@ -23,6 +23,9 @@ if [ -d /models ]; then
 fi
 
 if [ "${NV_SCHOOL_SCENE:-0}" = 1 ]; then
+    python3 /usr/local/lib/nv-school-asset-preflight.py \
+        /models/environments/school-demo/meshes/school_map.stl \
+        /models/drones/x500_base/meshes/drone.stl
     # Reuse the existing PX4 aircraft and the same fixture as the generated scene.
     school_launch="$(python3 - <<'PY'
 import json

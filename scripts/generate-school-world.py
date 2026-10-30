@@ -4,8 +4,12 @@
 import argparse
 import json
 import math
+import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "docker"))
+from school_asset_preflight import AssetError, check_stl
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "fixtures/school.json"
@@ -252,6 +256,10 @@ def main():
         action="store_true",
         help="check XML and detect stale generated files",
     )
+    parser.add_argument(
+        "--geometry-only", action="store_true",
+        help="check generated geometry offline without asserting runtime asset readiness",
+    )
     args = parser.parse_args()
     data = json.loads(FIXTURE.read_text(encoding="utf-8"))
     outputs = generate(data)
@@ -266,6 +274,15 @@ def main():
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content, encoding="utf-8")
     print("school scene XML and fixture consistency: OK")
+    if args.check and not args.geometry_only:
+        try:
+            check_stl(ROOT / "models/environments/school-demo/meshes/school_map.stl")
+            check_stl(ROOT / "models/drones/x500_base/meshes/drone.stl")
+        except AssetError as error:
+            raise SystemExit(f"school runtime asset preflight failed: {error}") from error
+        print("school runtime STL assets: OK")
+    elif args.geometry_only:
+        print("offline geometry only; runtime STL assets not checked")
 
 
 if __name__ == "__main__":

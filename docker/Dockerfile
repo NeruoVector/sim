@@ -34,6 +34,7 @@ RUN mkdir -p /ros2_ws/src
 COPY bashrc.append /tmp/bashrc.append
 RUN cat /tmp/bashrc.append >> /root/.bashrc && rm /tmp/bashrc.append
 
+COPY school_asset_preflight.py /usr/local/lib/nv-school-asset-preflight.py
 COPY entrypoint.sh /usr/local/bin/nv-entrypoint.sh
 RUN chmod +x /usr/local/bin/nv-entrypoint.sh
 

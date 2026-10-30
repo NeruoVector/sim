@@ -13,6 +13,8 @@ From the repository root:
 ```bash
 python3 sim/scripts/generate-school-world.py
 python3 sim/scripts/generate-school-world.py --check
+# Offline XML and fixture checks only (does not establish runtime asset readiness):
+python3 sim/scripts/generate-school-world.py --check --geometry-only
 ```
 
 Or from `sim/`:
@@ -98,3 +100,5 @@ Docker의 `pgvector/pgvector:pg16` 이미지를 사용합니다. 이미지가 �
 2026-10-22 실행 결과: 회피 16개, Rust/C++ 경로 2개, 거부 조건 3개와 위 API 흐름이
 통과했습니다. Docker의 학교 월드에 `x500_depth_0` 기체가 생성됐고 `/depth_camera`에서
 640×480 프레임을 실제 수신했습니다. 이 확인은 기체 시동·이륙·자율 배송을 포함하지 않습니다.
+
+The default `--check` and the container school entrypoint require readable, nonempty STL geometry. Git LFS pointer files are rejected with a restoration message; the offline geometry-only mode does not demonstrate that Gazebo can render the school. Rebuild the simulation image after updating the shared preflight script.

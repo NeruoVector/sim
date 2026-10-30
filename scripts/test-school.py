@@ -57,7 +57,7 @@ def main():
     require(fixture["synthetic"] is True, "school fixture must be explicitly synthetic")
     for tool in ("cargo", "g++"):
         require(shutil.which(tool), f"{tool} is required")
-    run(["python3", str(SIM / "scripts/generate-school-world.py"), "--check"])
+    run(["python3", str(SIM / "scripts/generate-school-world.py"), "--check", "--geometry-only"])
     with tempfile.TemporaryDirectory(prefix="nv-school-") as temporary:
         work = Path(temporary)
         env = os.environ | {
@@ -102,6 +102,8 @@ def main():
             flags
             + [
                 str(PROJECT / "drone/src/mission.cpp"),
+                str(PROJECT / "drone/src/mission_parse.cpp"),
+                str(PROJECT / "drone/src/mission_geometry.cpp"),
                 str(PROJECT / "drone/app/route_check.cpp"),
                 "-o",
                 str(checker),
@@ -233,6 +235,10 @@ def main():
         destination.mkdir(parents=True, exist_ok=True)
         for path in work.glob("*.json"):
             shutil.copyfile(path, destination / path.name)
+        if os.environ.get("SCHOOL_CAPTURE_SQL_LOG") == "1":
+            backend_log = work / "school-backend.log"
+            if backend_log.is_file():
+                shutil.copyfile(backend_log, destination / "school-backend-sql.log")
         (destination / "report.json").write_text(
             json.dumps(summary, indent=2, ensure_ascii=False) + "\n"
         )
