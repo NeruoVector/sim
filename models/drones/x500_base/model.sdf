@@ -19,7 +19,8 @@
       <gravity>true</gravity>
       <velocity_decay />
       <visual name="neurovector_drone_visual">
-        <pose>-0.00257 0.00702 -0.25 0 0 0</pose>
+        <!-- Source STL starts at z=0; skid contact is z=-0.227 in base_link. -->
+        <pose>-0.00257 0.00702 -0.225 0 0 0</pose>
         <geometry>
           <mesh>
             <uri>model://x500_base/meshes/drone.stl</uri>

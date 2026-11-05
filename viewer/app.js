@@ -147,7 +147,8 @@ function animate(now) {
   for(const mark of marks) draw(wire,mark.color,mark.point,mark.size);
   const pos=selected ? waypointAt(elapsed) : fixture.route_start_enu;
   droneLabel.point=pos;
-  draw(drone,[.94,.94,1],pos.map((v,i)=>v+[-.00257,.00702,-.25][i]),[.01,.01,.01]);
+  // Route positions use the root frame: base_link +0.24, mesh visual -0.225.
+  draw(drone,[.94,.94,1],pos.map((v,i)=>v+[-.00257,.00702,.015][i]),[.01,.01,.01]);
   draw(wire,[.9,.96,1],pos,[2,2,1]);
   for(const label of labels) {
     const [x,y]=screen(label.point); label.element.style.left=`${x}px`;label.element.style.top=`${y}px`;

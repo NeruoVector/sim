@@ -36,6 +36,13 @@ class SchoolScene(Node):
                 "base model pose changed; update the visualization transform"
             )
         self.base_offset = base_pose[:3]
+        visual = base_sdf.find("model/link/visual[@name='neurovector_drone_visual']")
+        if visual is None:
+            raise ValueError("drone visual is missing from the base model")
+        self.visual_pose = [float(v) for v in visual.findtext("pose", "").split()]
+        self.visual_scale = [float(v) for v in visual.findtext("geometry/mesh/scale", "").split()]
+        if len(self.visual_pose) != 6 or any(self.visual_pose[3:]) or len(self.visual_scale) != 3:
+            raise ValueError("drone visual requires an unrotated pose and three-axis scale")
         self.create_subscription(
             Odometry, "/sim/odometry", self.on_pose, qos_profile_sensor_data
         )
@@ -87,16 +94,11 @@ class SchoolScene(Node):
         base.transform.rotation.w = 1.0
         self.tf.sendTransform([root, base])
         m = self.marker(
-            1, Marker.MESH_RESOURCE, [0, 0, 0], [0.01] * 3, [0.85, 0.87, 0.9, 1]
+            1, Marker.MESH_RESOURCE, self.visual_pose[:3], self.visual_scale, [0.85, 0.87, 0.9, 1]
         )
         m.header.frame_id = "base_link"
         m.header.stamp = msg.header.stamp
         m.mesh_resource = "file:///models/drones/x500_base/meshes/drone.stl"
-        m.pose.position.x, m.pose.position.y, m.pose.position.z = (
-            -0.00257,
-            0.00702,
-            -0.25,
-        )
         self.live_drone = m
 
     def geo(self, w):
