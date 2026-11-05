@@ -34,6 +34,17 @@
     "approach_distance_m": 15.0,
     "hold_seconds": 30.0
   },
+  "delivery_missions": {
+    "cruise_altitude_m": 18.0,
+    "speed_mps": 1.0,
+    "arrival_hold_seconds": 5.0,
+    "destinations": {
+      "lobby": [30.0, 37.0, 18.0],
+      "gym": [60.0, 20.0, 18.0],
+      "back": [30.0, 63.0, 18.0],
+      "playground": [25.0, 12.0, 18.0]
+    }
+  },
   "obstacles": [
     {"id": "student", "label": "person", "priority": 1, "position_enu": [3.0, 0.0, 8.0], "radius_m": 0.4},
     {"id": "school-van", "label": "car", "priority": 2, "position_enu": [14.0, 0.0, 8.0], "radius_m": 1.0},

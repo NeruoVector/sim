@@ -39,6 +39,19 @@ def pack_image(message: Image) -> Frame:
     return Frame(width, height, pixel_format, packed, time.monotonic())
 
 
+def encoder_command(frame: Frame, fps: float, destination: str) -> list[str]:
+    """Timestamp frames on arrival so pipe delays do not shorten recorded time."""
+    return [
+        "ffmpeg", "-hide_banner", "-loglevel", "warning", "-f", "rawvideo",
+        "-pixel_format", frame.pixel_format, "-video_size", f"{frame.width}x{frame.height}",
+        "-framerate", str(fps), "-use_wallclock_as_timestamps", "1", "-i", "pipe:0",
+        "-an", "-c:v", "libx264", "-fps_mode", "passthrough",
+        "-preset", "ultrafast", "-tune", "zerolatency", "-profile:v", "baseline",
+        "-pix_fmt", "yuv420p", "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2",
+        "-g", str(max(1, round(fps))), "-bf", "0", "-f", "mpegts", destination,
+    ]
+
+
 class CameraStream(Node):
     """Keep encoding and network backpressure off the ROS subscription thread."""
 
@@ -112,14 +125,10 @@ class CameraStream(Node):
                 current = (frame.width, frame.height, frame.pixel_format)
                 if self._encoder is None or geometry != current:
                     self.stop_encoder()
-                    self._encoder = subprocess.Popen([
-                        "ffmpeg", "-hide_banner", "-loglevel", "warning", "-f", "rawvideo",
-                        "-pixel_format", frame.pixel_format, "-video_size", f"{frame.width}x{frame.height}",
-                        "-framerate", str(self.fps), "-i", "pipe:0", "-an", "-c:v", "libx264",
-                        "-preset", "ultrafast", "-tune", "zerolatency", "-profile:v", "baseline",
-                        "-pix_fmt", "yuv420p", "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2",
-                        "-g", str(max(1, round(self.fps))), "-bf", "0", "-f", "mpegts", self.url,
-                    ], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL)
+                    self._encoder = subprocess.Popen(
+                        encoder_command(frame, self.fps, self.url),
+                        stdin=subprocess.PIPE, stdout=subprocess.DEVNULL,
+                    )
                     geometry = current
                 encoder = self._encoder
                 if encoder.poll() is not None or encoder.stdin is None:

@@ -120,3 +120,29 @@ Docker의 `pgvector/pgvector:pg16` 이미지를 사용합니다. 이미지가 �
 2026-10-22 실행 결과: 회피 16개, Rust/C++ 경로 2개, 거부 조건 3개와 위 API 흐름이
 통과했습니다. Docker의 학교 월드에 `x500_depth_0` 기체가 생성됐고 `/depth_camera`에서
 640×480 프레임을 실제 수신했습니다. 이 확인은 기체 시동·이륙·자율 배송을 포함하지 않습니다.
+
+### Camera scene targets
+
+The generated scene places a life-size skeletal person at ENU `(6, -8, 0)`, a
+parked Prius at `(12, -5, 0)`, and an oak at `(20, -10, 0)`, facing the launch
+camera's initial eastward (+X) view before arming. All targets sit south of the
+campus mesh to avoid wall occlusion. The person is outside the departure camera
+corridor so its stationary presence does not hold every new mission; safety
+holds remain unchanged. The person walks in place on a stationary trajectory;
+the parked car uses the original visual transforms without its drivetrain or
+joints. These ground-level targets leave the launch column clear. Their scene
+placements are separate from the existing safety obstacle fixtures, whose
+collision volumes remain unchanged and whose colored debug visuals are hidden.
+
+All three meshes and car/tree textures are the existing CC0 Fuel assets, with
+original sources and versions in each prop's `ATTRIBUTION.md`. Restore only the
+required bytes with `python3 sim/scripts/hydrate-school-assets.py`; use `--check`
+to verify them offline. The adjacent manifest records the original LFS SHA-256
+and size, and downloads must match both before an atomic replacement. Modified
+local files and original model definitions are preserved. No force directory
+replacement is needed.
+
+The targets make real camera inference possible; their names and placements are
+**not detections**. Fixture ground truth continues to support safety scenarios
+and must never be fed into the image detector as its output. Recognizability
+still requires runtime camera validation after an idle simulator reload.

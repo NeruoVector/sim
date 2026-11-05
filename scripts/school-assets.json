@@ -1,0 +1,50 @@
+[
+  {
+    "path": "walking-actor/meshes/walk.dae",
+    "sha256": "49af0df3a319d1cb8ca2cebf02dbd00f625e5d5bec820bc5e109925b18b65c6e",
+    "size": 2277322,
+    "url": "https://fuel.gazebosim.org/1.0/chapulina/models/Walking%20actor/2/files/meshes/walk.dae"
+  },
+  {
+    "path": "prius-hybrid/materials/textures/Hybrid.png",
+    "sha256": "e6474fd1cf90afe11936d86d2c52264dea26cd18cdc5e59f28d4d918ecb1eebd",
+    "size": 390951,
+    "url": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Prius%20Hybrid/3/files/materials/textures/Hybrid.png"
+  },
+  {
+    "path": "prius-hybrid/materials/textures/Hybrid_Interior.png",
+    "sha256": "6f0da0f51944ce26a8a8cb6ac094b35268a1ba53b0cba3279a38346c413bb811",
+    "size": 435756,
+    "url": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Prius%20Hybrid/3/files/materials/textures/Hybrid_Interior.png"
+  },
+  {
+    "path": "prius-hybrid/materials/textures/Wheels3.png",
+    "sha256": "048b7037fdf2803842680fb51ba0261c59919e30c43b93a0ff12d2bf26525317",
+    "size": 363636,
+    "url": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Prius%20Hybrid/3/files/materials/textures/Wheels3.png"
+  },
+  {
+    "path": "prius-hybrid/meshes/Hybrid.obj",
+    "sha256": "557684ee2f60e162ec016944e026e362c21ad185839458d9148170035779ab56",
+    "size": 204056,
+    "url": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Prius%20Hybrid/3/files/meshes/Hybrid.obj"
+  },
+  {
+    "path": "oak-tree/materials/textures/bark_diffuse.png",
+    "sha256": "35b52144a8c5522df4e97a9a2125231699ad143f6f7273815a47a5064660f794",
+    "size": 174219,
+    "url": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Oak%20tree/7/files/materials/textures/bark_diffuse.png"
+  },
+  {
+    "path": "oak-tree/materials/textures/branch_diffuse.png",
+    "sha256": "f378bfa2f09f309ac79729afc0a4b6b482e5caa47ac6d982cadf1ebea880d872",
+    "size": 20249,
+    "url": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Oak%20tree/7/files/materials/textures/branch_diffuse.png"
+  },
+  {
+    "path": "oak-tree/meshes/oak_tree.dae",
+    "sha256": "b3edcfcf4875d2898103ee841ae6530d251730548c0575de8334d4e96d19bd27",
+    "size": 123413,
+    "url": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Oak%20tree/7/files/meshes/oak_tree.dae"
+  }
+]

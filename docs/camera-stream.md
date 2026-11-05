@@ -31,7 +31,8 @@ python3 /ros2_ws/src/nv_telemetry/nv_telemetry/camera_stream.py --ros-args \
   -r camera/image_raw:=/my_camera/image_raw
 ```
 
-The default is 5 fps for the school camera. Only rgb8/bgr8 are accepted; depth and
+The standalone publisher defaults to 5 fps. The live school stack overrides this
+with `NV_SCHOOL_CAMERA_FPS=15.0` and GPU sensor rendering. Only rgb8/bgr8 are accepted; depth and
 compressed topics need conversion upstream. Frames must have advancing acquisition
 timestamps; restart the relay after resetting simulator time. Resolution changes
 restart the encoder. Source dropout closes the publisher; fresh images can reopen
