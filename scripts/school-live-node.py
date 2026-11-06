@@ -26,7 +26,7 @@ from px4_msgs.msg import (
 )
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
-from school_flight_control import FlightControl, OrderAssignment
+from school_flight_control import FlightControl, OrderAssignment, position_setpoint_ned, route_heading, landing_aligned
 from school_mission import InvalidMission, Mission, MissionPlan, Point, enu_to_ned
 from sensor_msgs.msg import Image
 
@@ -76,6 +76,8 @@ class SchoolLive(Node):
         self.reference: Point | None = None
         self.last_control_time = time.monotonic()
         self.last_phase: str | None = None
+        self.heading = 0.0
+        self.landing_phase: tuple[str, int] | None = None
         self.route_error: tuple[str, str | None] | None = None
         self.setpoint = self.create_publisher(
             TrajectorySetpoint, "/fmu/in/trajectory_setpoint", 10
@@ -235,20 +237,30 @@ class SchoolLive(Node):
             self.mode = "order_completed"
             can_fly = False
         self.mission_authorized = can_fly
+        alignment_target: Point | None = None
         if self.mission is not None:
-            self.mission.step(position, armed=armed, authorized=can_fly, now=now)
+            self.mission.step(position, armed=armed, authorized=can_fly, now=now,
+                              received=assignment.received if assignment is not None else False)
             self.waypoint = self.mission.waypoint_index
             if self.last_phase != self.mission.phase:
                 self.get_logger().info(
                     f"Mission {self.mission.order_id}: {self.mission.phase}, waypoint {self.waypoint}"
                 )
                 self.last_phase = self.mission.phase
-            if self.mission.phase == "landing" and armed:
-                # Landing was authorized only after arrival and measured return to home.
-                self.mode = "landing"
-                if self.tick % 10 == 0:
-                    self.command(VehicleCommand.VEHICLE_CMD_NAV_LAND, 0.0)
+            if self.mission.phase == "awaiting_receipt":
+                self.mode = "awaiting_receipt"
                 return
+            if self.mission.phase in {"delivery_landing", "landing"} and armed:
+                key = (self.mission.order_id, self.waypoint)
+                aligned = landing_aligned(position, self.mission.target)
+                if aligned or self.landing_phase == key:
+                    self.mode = "landing"
+                    if self.landing_phase != key or self.tick % 10 == 0:
+                        self.command(VehicleCommand.VEHICLE_CMD_NAV_LAND, 0.0)
+                        self.landing_phase = key
+                    return
+                alignment_target = (*self.mission.target[:2], self.mission.plan.route[self.waypoint - 1][2])
+                self.mode = "landing_alignment"
         if not can_fly and not armed:
             return
         stamp = self.get_clock().now().nanoseconds // 1000
@@ -264,7 +276,7 @@ class SchoolLive(Node):
             self.hold = None
             if self.reference is None or not armed:
                 self.reference = position
-            desired = self.mission.target
+            desired = alignment_target if alignment_target is not None else self.mission.target
             distance = math.dist(self.reference, desired)
             fraction = (
                 min(1, self.mission.plan.speed_mps * dt / distance) if distance else 1
@@ -273,17 +285,19 @@ class SchoolLive(Node):
                 a + fraction * (b - a)
                 for a, b in zip(self.reference, desired, strict=True)
             )
-            target = tuple(
-                a + b
-                for a, b in zip(
-                    enu_to_ned(self.reference), self.ned_offset, strict=True
-                )
+            target = position_setpoint_ned(
+                self.reference, position, (self.local.x, self.local.y, self.local.z)
             )
         trajectory = TrajectorySetpoint()
         trajectory.timestamp, trajectory.position = stamp, list(target)
         trajectory.velocity = [math.nan] * 3
         trajectory.acceleration = [math.nan] * 3
-        trajectory.yaw = 0.0
+        if self.mission is not None:
+            look_at = self.mission.target
+            if self.mission.phase == "return_takeoff":
+                look_at = self.mission.plan.route[self.waypoint + 1]
+            self.heading = route_heading(look_at, position, self.heading)
+        trajectory.yaw = self.heading
         self.setpoint.publish(trajectory)
         if self.tick % 30 == 0 and time.monotonic() - self.started > 30 and can_fly:
             self.command(VehicleCommand.VEHICLE_CMD_DO_SET_MODE, 1.0, 6.0)

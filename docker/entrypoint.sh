@@ -36,6 +36,10 @@ PY
     # The packaged px4-gazebo wrapper resets PX4_GZ_WORLDS on every launch.
     px4_install="$(dirname "$(dirname "$(readlink -f "$(command -v px4-gazebo)")")")"
     cp /worlds/school.sdf "$px4_install/share/gz/worlds/school.sdf"
+    # PX4 resolves its initial SDF from this directory, bypassing server resource paths.
+    for model in x500_base x500_depth; do
+        cp -a "/models/drones/$model/." "$px4_install/share/gz/models/$model/"
+    done
     # School software-rendering profile; preserve the stock sensor geometry/FOV.
     mkdir -p /tmp/nv-school-models
     cp -a "$px4_install/share/gz/models/OakD-Lite" /tmp/nv-school-models/

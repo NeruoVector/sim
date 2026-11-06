@@ -16,8 +16,15 @@ import httpx2
 from pydantic import BaseModel, ConfigDict
 
 from neurovector_vision.models import DetectResponse
+from school_mission import Phase
 
 LOG = logging.getLogger("school-relay")
+
+
+class MissionContext(BaseModel):
+    phase: Phase
+    destination_id: str | None = None
+    route_enu: list[tuple[float, float, float]] | None = None
 
 
 class SimState(BaseModel):
@@ -28,6 +35,8 @@ class SimState(BaseModel):
     mode: str
     armed: bool
     drone_id: str
+    mission: MissionContext | None = None
+    waypoint: int = 0
 
     def require_fresh(self) -> None:
         now = time.time()

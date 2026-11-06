@@ -24,6 +24,7 @@ class DispatchOrder(BaseModel):
     status: str
     created_at: datetime
     destination_id: str | None = None
+    received: bool = False
 
 
 class DispatchCursor(BaseModel):
@@ -42,6 +43,7 @@ class Assignment(BaseModel):
     order_id: UUID | None
     error: str | None = None
     destination_id: str | None = None
+    received: bool = False
 
 
 class OrderRelay:
@@ -68,12 +70,14 @@ class OrderRelay:
         order_id: UUID | None,
         error: str | None = None,
         destination_id: str | None = None,
+        received: bool = False,
     ) -> None:
         assignment = Assignment(
             timestamp=time.time(),
             order_id=order_id,
             error=error,
             destination_id=destination_id,
+            received=received,
         )
         atomic_write(
             self.root, "order-assignment.json", assignment.model_dump_json().encode()
@@ -110,7 +114,7 @@ class OrderRelay:
                 self.cursor = DispatchCursor(after=order.created_at, after_id=order.id)
                 self._save_cursor()
                 continue
-            self._assign(order.id, destination_id=order.destination_id)
+            self._assign(order.id, destination_id=order.destination_id, received=order.received)
             return
         self._assign(None)
 

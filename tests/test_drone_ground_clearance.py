@@ -39,3 +39,44 @@ def test_imported_drone_mesh_clears_ground_when_landing_skids_touch():
     # Then every visible vertex stays above contact, without clamping telemetry.
     clearance = visual_bottom - min(collision_bottoms)
     assert 0.001 <= clearance <= 0.003, f"Mesh ground clearance is {clearance:.6f} m"
+
+
+def test_landing_marker_does_not_cover_the_landing_skids():
+    # Given the decorative home marker and actual physical ground,
+    model = ET.parse(Path(__file__).parents[1] / "models/environments/school-demo/model.sdf")
+    marker = model.find("model/link[@name='takeoff_marker']")
+    ground = model.find("model/link[@name='campus_ground']")
+    assert marker is not None and ground is not None
+
+    # When comparing the visible surface to the physical support surface,
+    marker_top = float(marker.findtext("pose", "").split()[2]) + float(
+        marker.findtext("visual/geometry/box/size", "").split()[2]
+    ) / 2
+    ground_top = float(ground.findtext("pose", "").split()[2]) + float(
+        ground.findtext("collision/geometry/box/size", "").split()[2]
+    ) / 2
+
+    # Then grounded skids cannot disappear inside a floating visual-only pad.
+    assert marker_top <= ground_top + 0.0001
+
+
+def test_forward_camera_starts_ahead_of_the_aircraft_visual():
+    # Given the actual imported aircraft geometry and its camera mount,
+    root = Path(__file__).parents[1] / "models/drones"
+    mount = ET.parse(root / "x500_depth/model.sdf")
+    camera_pose = mount.findtext("model/include[uri='model://OakD-Lite']/pose", "")
+    camera_x = float(camera_pose.split()[0])
+    aircraft = ET.parse(root / "x500_base/model.sdf")
+    visual = aircraft.find("model/link/visual[@name='neurovector_drone_visual']")
+    assert visual is not None
+    offset = float(visual.findtext("pose", "").split()[0])
+    scale = float(visual.findtext("geometry/mesh/scale", "").split()[0])
+
+    # When projecting every visible vertex onto the camera's forward axis,
+    data = (root / "x500_base/meshes/drone.stl").read_bytes()
+    front = max(record[index] * scale + offset
+                for record in struct.iter_unpack("<12fH", memoryview(data)[84:])
+                for index in (3, 6, 9))
+
+    # Then the entire aircraft lies behind the optical origin, without hiding it.
+    assert camera_x > front

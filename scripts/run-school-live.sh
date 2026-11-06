@@ -27,6 +27,7 @@ PX4_GZ_STANDALONE=1 px4-gazebo -d &
 sleep 15
 restart_worker ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=/config/school_bridge.yaml &
 python3 /scripts/school-live-node.py --ros-args -p use_sim_time:=true &
+restart_worker python3 /scripts/school-depth-node.py --ros-args -p use_sim_time:=true &
 restart_worker python3 /ros2_ws/src/nv_telemetry/nv_telemetry/camera_stream.py --ros-args -p drone_id:=school-drone-001 -p srt_host:=mediamtx -p frame_timeout_s:=3.0 -p fps:="$camera_fps" &
 sed -e 's|<camera_pose>.*</camera_pose>|<camera_pose>18 -22 16 0 0.5 2.1</camera_pose>|' \
     /opt/ros/jazzy/opt/gz_sim_vendor/share/gz/gz-sim8/gui/gui.config > /tmp/school-gui.config

@@ -98,6 +98,7 @@ def test_destination_is_forwarded_without_customer_details(tmp_path):
         "created_at": datetime.now(UTC).isoformat(),
         "destination_id": "gym",
         "delivery_address": "must not forward",
+        "received": True,
     }
     with httpx2.Client(
         transport=httpx2.MockTransport(
@@ -107,6 +108,7 @@ def test_destination_is_forwarded_without_customer_details(tmp_path):
         relay.poll_once(client)
     assignment = json.loads((tmp_path / "order-assignment.json").read_text())
     assert assignment["destination_id"] == "gym"
+    assert assignment["received"] is True
     assert "delivery_address" not in assignment
 
 

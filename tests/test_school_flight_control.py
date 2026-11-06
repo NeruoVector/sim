@@ -1,6 +1,30 @@
 """Orders authorize bounded flights; inference alone never starts the drone."""
 
 from school_flight_control import FlightControl, OrderAssignment
+from school_flight_control import position_setpoint_ned
+from school_flight_control import route_heading
+from school_flight_control import landing_aligned
+import pytest
+
+
+def test_world_target_accounts_for_current_estimator_drift():
+    # Given a world-frame residual and an estimator with a different origin.
+    target = position_setpoint_ned((30,37,5),(29.8,37.1,4.9),(-2,3,-4))
+    # Then the NED command closes the measured world error, rather than preserving drift.
+    assert target == pytest.approx((-2.1,3.2,-4.1))
+    assert position_setpoint_ned((30,37,5),(30,37,5),(-2,3,-4)) == (-2,3,-4)
+
+
+def test_camera_follows_travel_direction_and_keeps_vertical_leg_heading():
+    assert route_heading((0,10,5),(0,0,5),1) == 0
+    assert route_heading((10,0,5),(0,0,5),0) == pytest.approx(1.5707963267948966)
+    assert route_heading((0,0,5),(0,0,0),1) == 1
+
+
+def test_landing_waits_for_precise_horizontal_alignment():
+    assert not landing_aligned((0.5,0,5),(0,0,.15))
+    assert not landing_aligned((.08,.08,5),(0,0,.15))
+    assert landing_aligned((.05,.05,5),(0,0,.15))
 
 
 def test_healthy_model_without_order_stays_idle():

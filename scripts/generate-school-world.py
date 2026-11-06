@@ -136,7 +136,8 @@ def generate(data):
     box(
         model,
         "takeoff_marker",
-        [takeoff[0], takeoff[1], center[2] + 0.015],
+        # A 0.1mm render offset avoids z-fighting without covering grounded feet.
+        [takeoff[0], takeoff[1], center[2] - 0.0099],
         [1.5, 1.5, 0.02],
         "0.95 0.95 0.85 1",
         collision=False,
